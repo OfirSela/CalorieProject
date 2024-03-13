@@ -1,19 +1,22 @@
 /**
- * Developer(s):
+ * Developers:
  * First Name: Ofir
  * Last Name: Salomon
  * ID: 304845688
  *
- * Project: Calorie Tracker API
- * Description: This file (purpose of the file, e.g., sets up the Express server and routes).
  */
+
+// Import the Calorie model to interact with the calorie collection in MongoDB
 const Calorie = require('../models/calories');
+// Import the express module
 const express = require('express');
+// Create a new router object to handle routes
 const router = express.Router();
 
-
+// Define a POST route for adding a new calorie entry
 router.post('/', async (req, res) => {
   try {
+    // Destructure and extract fields from the request body
     const { 
       user_id,
       year,
@@ -21,29 +24,31 @@ router.post('/', async (req, res) => {
       day,
       description,
       category,
-      amount} = req.body;
-      const newCalorie = new Calorie (
-      {
-        user_id,
-        year,
-        month,
-        day,
-        description,
-        category,
-        amount
-      }
-      );
+      amount
+    } = req.body;
 
-      await newCalorie.save();
-      res.status(201).json(newCalorie);
+    // Create a new Calorie document instance with the extracted values
+    const newCalorie = new Calorie ({
+      user_id,
+      year,
+      month,
+      day,
+      description,
+      category,
+      amount
+    });
+
+    // Save the new calorie entry to the database
+    await newCalorie.save();
+
+    // If successful, respond with a 201 Created status and the new calorie entry
+    res.status(201).json(newCalorie);
+  } catch (error) {
+    // If an error occurs, respond with a 500 Internal Server Error status and the error message
+    res.status(500).json({error: error.message});
   }
-  catch
-    (error)
-    {
-      res.status(500).json({error: error.message});
-    }
-  });
+});
 
-module.exports= router;
-
+// Export the router so it can be used in other parts of the application
+module.exports = router;
 

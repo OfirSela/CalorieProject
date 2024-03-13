@@ -1,26 +1,29 @@
 /**
- * Developer(s):
+ * Developers:
  * First Name: Ofir
  * Last Name: Salomon
  * ID: 304845688
  *
- * Project: Calorie Tracker API
- * Description: This file (purpose of the file, e.g., sets up the Express server and routes).
  */
 
+// Import necessary modules
 const express = require('express');
 const router = express.Router();
-const { MongoClient } = require('mongodb');
-const Calorie = require('../models/calories');
+const { MongoClient } = require('mongodb'); // Not used in the provided snippet
+const Calorie = require('../models/calories'); // Model for accessing calorie data
 
+// Define a route to handle GET requests
 router.get('/', async (req, res) => {
-    const { user_id, year, month } = req.query;
+    const { user_id, year, month } = req.query; // Extract user_id, year, and month from query parameters
+    // Initialize categories with empty arrays
     const caloriesCategories = { breakfast: [], lunch: [], dinner: [], other: [] };
 
     try {
+        // Find calorie entries matching the criteria
         const report = await Calorie.find({year, month, user_id}).select("day description amount category");
+        // Iterate over each entry and categorize
         report.forEach(calorie => {
-            const entry = {
+            const entry = { // Construct an entry object
                 day: calorie.day,
                 description: calorie.description,
                 amount: calorie.amount
@@ -34,11 +37,11 @@ router.get('/', async (req, res) => {
                 caloriesCategories[currentCalorieCategory].push(entry);
             }          
         });
+        // Respond with categorized entries
         res.status(200).json(caloriesCategories);
-    } catch (error) {
+    } catch (error) { // Catch and respond to any errors
         res.status(500).json({error: error.message});
     }
 });
 
-
-module.exports = router;
+module.exports = router; // Export the router for use in the application
