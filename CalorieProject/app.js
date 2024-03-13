@@ -1,41 +1,58 @@
 /**
- * Developer(s):
+ * Developers:
  * First Name: Ofir
  * Last Name: Salomon
  * ID: 304845688
  *
- * Project: Calorie Tracker API
- * Description: Main application entry point. Initializes the Express application, 
- * sets up middleware, connects to the MongoDB database, and defines the application routes.
  */
 
+// Import the required modules
 const express = require('express');
 const mongoose = require('mongoose');
+
+// Import route handlers
 const addcalories = require('./routes/addcalories');
 const about = require('./routes/about');
 const report = require('./routes/report');
 const index = require('./routes/index');
 
+// Create an Express application
 const app = express();
-app.use(express.json()); // For parsing application/json
+
+// Set Pug as the view engine
+app.set('view engine', 'pug');
+
+// Middleware to parse JSON bodies
+app.use(express.json());
+
+// MongoDB connection string
 const uri = "mongodb+srv://selaofir7:1424@cluster0.3rkyhel.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true}).then(()=>
-{console.log('Connected to database.');}).catch(err=>{
-    console.log(`failed to connect ${err}`);
-});
 
-const port = process.env.PORT || 1500;
-app.listen(port, () => {
-console.log(`Server running on port ${port}`);
-});
-
-// Use the routes with their respective base paths
-app.use('/addcalories', addcalories); // For calories related endpoints
-app.use('/about', about); // For the about endpoint
-app.use('/report', report); // For the report endpoint
-app.use('/index', index); // For the index endpoint
-
-
-module.exports = app;
+// Connect to MongoDB using Mongoose
+mongoose.connect(uri, {
+    useNewUrlParser: true, 
+    useUnifiedTopology: true
+  }).then(() => {
+    console.log('Connected to database.');
+  }).catch(err => {
+    console.log(`Failed to connect ${err}`);
+  });
+  
+  // Define the port to listen on, default to 1500 if not specified in the environment
+  const port = process.env.PORT || 1500;
+  
+  // Start the server
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+  
+  // Define routes with their base paths
+  app.use('/addcalories', addcalories); // Route for adding calories
+  app.use('/about', about); // Route for about information
+  app.use('/report', report); // Route for generating reports
+  app.use('/', index); // Route for the index page
+  
+  // Export the Express application
+  module.exports = app;
 
